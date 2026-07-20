@@ -1,0 +1,50 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Outfit', sans-serif;
+    background-color: #020617; /* slate-955 */
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #1e293b; /* slate-800 */
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #334155; /* slate-700 */
+}
+
+/* Active Navlink styling override */
+.active {
+    background-color: rgba(139, 92, 246, 0.15) !important; /* brand-500/15 */
+    color: #c084fc !important; /* brand-300 */
+    border-color: rgba(168, 85, 247, 0.4) !important; /* brand-400/40 */
+}
+
+/* Glassmorphism utility */
+.glass {
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Custom Background utilities */
+.bg-slate-850 {
+    background-color: #111b2d;
+}
+
+.bg-slate-900\/10 {
+    background-color: rgba(15, 23, 42, 0.1);
+}

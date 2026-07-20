@@ -1,0 +1,205 @@
+@page "/log"
+@inject IDbContextFactory<DayScribeDbContext> DbFactory
+
+<div class="space-y-6 max-w-5xl mx-auto">
+    <!-- Filter Control Card -->
+    <div class="p-6 rounded-3xl bg-slate-900/40 border border-slate-800/80 backdrop-blur-md flex flex-wrap gap-4 items-center justify-between">
+        <div class="flex items-center space-x-4 flex-wrap gap-y-2">
+            <!-- View Toggle -->
+            <div class="bg-slate-950 p-1 rounded-xl border border-slate-800 flex">
+                <button @onclick='() => SetViewType("App")' class="px-4 py-2 rounded-lg text-xs font-bold transition @(ViewType == "App" ? "bg-brand-600 text-white" : "text-slate-400 hover:text-slate-200")">
+                    App Activities
+                </button>
+                <button @onclick='() => SetViewType("Browser")' class="px-4 py-2 rounded-lg text-xs font-bold transition @(ViewType == "Browser" ? "bg-brand-600 text-white" : "text-slate-400 hover:text-slate-200")">
+                    Browser Pages
+                </button>
+            </div>
+
+            <!-- Search input -->
+            <input @bind:event="oninput" @bind="SearchQuery" type="text" placeholder="Search logs..." class="px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs focus:outline-none focus:border-brand-500 text-slate-100 w-64" />
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <!-- Refresh Logs -->
+            <button @onclick="LoadLogsAsync" class="px-4 py-2 bg-slate-800 hover:bg-slate-700/85 text-slate-300 text-xs font-bold rounded-xl transition border border-slate-700 flex items-center space-x-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3-3 3 3m-3-3v12" /></svg>
+                <span>Refresh</span>
+            </button>
+
+            <!-- Clear Logs Button -->
+            <button @onclick="ClearAllLogs" class="px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold rounded-xl transition border border-rose-500/20 flex items-center space-x-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                <span>Clear Database</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Timeline / Grid Container -->
+    <div class="p-6 rounded-3xl bg-slate-900/30 border border-slate-800/60 shadow-xl backdrop-blur-md overflow-hidden">
+        @if (ViewType == "App")
+        {
+            <!-- App activity timeline -->
+            <div class="overflow-x-auto max-h-[550px] overflow-y-auto pr-1">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-800 text-slate-400 font-bold uppercase tracking-wider sticky top-0 bg-slate-950/90 backdrop-blur z-10">
+                            <th class="py-3.5 px-4">Time</th>
+                            <th class="py-3.5 px-4">Application</th>
+                            <th class="py-3.5 px-4">Window Title</th>
+                            <th class="py-3.5 px-4 text-center">Type</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/50">
+                        @if (!FilteredAppLogs.Any())
+                        {
+                            <tr>
+                                <td colspan="4" class="py-12 text-center text-slate-500">
+                                    No app activity logs matching filters.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var log in FilteredAppLogs)
+                            {
+                                <tr class="hover:bg-slate-800/20 transition-colors duration-150">
+                                    <td class="py-3.5 px-4 text-slate-400">@log.Timestamp.ToLocalTime().ToString("hh:mm:ss tt")</td>
+                                    <td class="py-3.5 px-4 font-semibold text-slate-200">
+                                        <span class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700/50">@log.ProcessName</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-slate-300 max-w-md truncate" title="@log.WindowTitle">@log.WindowTitle</td>
+                                    <td class="py-3.5 px-4 text-center">
+                                        @if (log.IsBrowser)
+                                        {
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">Browser</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-500/10 text-brand-400 border border-brand-500/20">Desktop</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <!-- Browser event timeline -->
+            <div class="overflow-x-auto max-h-[550px] overflow-y-auto pr-1">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-800 text-slate-400 font-bold uppercase tracking-wider sticky top-0 bg-slate-950/90 backdrop-blur z-10">
+                            <th class="py-3.5 px-4">Time</th>
+                            <th class="py-3.5 px-4">Domain</th>
+                            <th class="py-3.5 px-4">Title / URL</th>
+                            <th class="py-3.5 px-4 text-right">Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/50">
+                        @if (!FilteredBrowserEvents.Any())
+                        {
+                            <tr>
+                                <td colspan="4" class="py-12 text-center text-slate-500">
+                                    No browser extension logs matching filters.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var ev in FilteredBrowserEvents)
+                            {
+                                <tr class="hover:bg-slate-800/20 transition-colors duration-150">
+                                    <td class="py-3.5 px-4 text-slate-400">@ev.Timestamp.ToLocalTime().ToString("hh:mm:ss tt")</td>
+                                    <td class="py-3.5 px-4 font-semibold text-slate-200">
+                                        <span class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700/50">@ev.Domain</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 max-w-lg">
+                                        <div class="font-medium text-slate-200 truncate" title="@ev.Title">@ev.Title</div>
+                                        <div class="text-[10px] text-slate-500 truncate" title="@ev.Url">@ev.Url</div>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right font-medium text-slate-300">@FormatDuration(ev.DurationSecs)</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private string ViewType = "App";
+    private string SearchQuery = "";
+    private List<ActivityLogEntry> AppLogs = [];
+    private List<BrowserEvent> BrowserEvents = [];
+
+    private List<ActivityLogEntry> FilteredAppLogs => AppLogs
+        .Where(l => string.IsNullOrWhiteSpace(SearchQuery) || 
+                    l.ProcessName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) || 
+                    l.WindowTitle.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+
+    private List<BrowserEvent> FilteredBrowserEvents => BrowserEvents
+        .Where(e => string.IsNullOrWhiteSpace(SearchQuery) || 
+                    e.Domain.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) || 
+                    e.Title.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) || 
+                    e.Url.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadLogsAsync();
+    }
+
+    private async Task LoadLogsAsync()
+    {
+        using var db = await DbFactory.CreateDbContextAsync();
+        
+        AppLogs = await db.ActivityLogs
+            .OrderByDescending(l => l.Timestamp)
+            .Take(100) // limit to recent 100 for responsiveness
+            .ToListAsync();
+
+        BrowserEvents = await db.BrowserEvents
+            .OrderByDescending(e => e.Timestamp)
+            .Take(100)
+            .ToListAsync();
+        
+        StateHasChanged();
+    }
+
+    private void SetViewType(string view)
+    {
+        ViewType = view;
+        SearchQuery = "";
+    }
+
+    private async Task ClearAllLogs()
+    {
+        try
+        {
+            using var db = await DbFactory.CreateDbContextAsync();
+            await db.Database.ExecuteSqlRawAsync("DELETE FROM ActivityLogs");
+            await db.Database.ExecuteSqlRawAsync("DELETE FROM BrowserEvents");
+            await db.Database.ExecuteSqlRawAsync("DELETE FROM ArticleSummaries");
+            await LoadLogsAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error clearing database: {ex.Message}");
+        }
+    }
+
+    private static string FormatDuration(int seconds)
+    {
+        if (seconds < 60) return $"{seconds}s";
+        var minutes = seconds / 60;
+        if (minutes < 60) return $"{minutes}m {seconds % 60}s";
+        var hours = minutes / 60;
+        return $"{hours}h {minutes % 60}m";
+    }
+}

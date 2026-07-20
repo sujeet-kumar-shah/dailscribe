@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "DayScribe Activity Tracker",
+  "version": "1.0",
+  "description": "Reports active URL and tab duration to local DayScribe desktop app.",
+  "permissions": [
+    "activeTab"
+  ],
+  "host_permissions": [
+    "http://localhost:9103/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

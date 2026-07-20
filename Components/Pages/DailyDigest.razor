@@ -1,0 +1,159 @@
+@page "/digest"
+@inject DailyDigestService DigestService
+@inject ArticleSummarizerService SummarizerService
+@inject IDbContextFactory<DayScribeDbContext> DbFactory
+
+<div class="space-y-8 max-w-4xl mx-auto">
+    <!-- Action panel -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Generate Digest Card -->
+        <div class="p-6 rounded-3xl bg-slate-900/40 border border-slate-800/80 backdrop-blur-md flex flex-col justify-between space-y-4">
+            <div>
+                <h3 class="text-base font-bold text-slate-200">Daily Activity Synthesis</h3>
+                <p class="text-xs text-slate-400 mt-1">Compile your active app tracking, browser history, and article summaries into a single comprehensive AI digest.</p>
+            </div>
+            <button @onclick="GenerateDigestAsync" disabled="@IsDigestGenerating" class="w-full inline-flex items-center justify-center space-x-2 py-3 px-4 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white text-sm font-semibold rounded-2xl shadow-lg disabled:opacity-50 transition-all duration-200">
+                @if (IsDigestGenerating)
+                {
+                    <span class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></span>
+                    <span>Analyzing Activities...</span>
+                }
+                else
+                {
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 9.172V5L8 4z" /></svg>
+                    <span>Generate Today's Digest</span>
+                }
+            </button>
+        </div>
+
+        <!-- Trigger Article Summarization -->
+        <div class="p-6 rounded-3xl bg-slate-900/40 border border-slate-800/80 backdrop-blur-md flex flex-col justify-between space-y-4">
+            <div>
+                <h3 class="text-base font-bold text-slate-200">Process Web Reading</h3>
+                <p class="text-xs text-slate-400 mt-1">Analyze browser events logged by the extension. Automatically fetch and summarize long-form articles.</p>
+            </div>
+            <button @onclick="ProcessWebArticlesAsync" disabled="@IsArticlesProcessing" class="w-full inline-flex items-center justify-center space-x-2 py-3 px-4 bg-slate-800 hover:bg-slate-700/85 text-slate-200 text-sm font-semibold border border-slate-700 rounded-2xl shadow-lg disabled:opacity-50 transition-all duration-200">
+                @if (IsArticlesProcessing)
+                {
+                    <span class="animate-spin h-4 w-4 border-2 border-slate-450 border-t-transparent rounded-full mr-2"></span>
+                    <span>Extracting Articles...</span>
+                }
+                else
+                {
+                    <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                    <span>Scan & Summarize Articles</span>
+                }
+            </button>
+        </div>
+    </div>
+
+    <!-- AI Generated Summary panel -->
+    @if (!string.IsNullOrEmpty(DigestContent))
+    {
+        <div class="p-8 rounded-3xl bg-slate-900/30 border border-slate-800/80 shadow-2xl backdrop-blur-md space-y-6">
+            <h3 class="text-lg font-bold bg-gradient-to-r from-brand-400 to-indigo-400 bg-clip-text text-transparent border-b border-slate-800 pb-4 flex items-center space-x-2">
+                <svg class="w-5 h-5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                <span>AI Daily Digest</span>
+            </h3>
+            <div class="prose prose-invert max-w-none text-slate-350 text-sm leading-relaxed whitespace-pre-wrap">@DigestContent</div>
+        </div>
+    }
+
+    <!-- Articles read panel -->
+    <div class="p-6 rounded-3xl bg-slate-900/30 border border-slate-800/60 shadow-xl backdrop-blur-md">
+        <h3 class="text-sm font-bold text-slate-200 mb-6 flex items-center space-x-2 border-b border-slate-800/50 pb-4">
+            <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+            <span>Today's Web Learnings</span>
+        </h3>
+
+        <div class="space-y-6">
+            @if (!TodaySummaries.Any())
+            {
+                <div class="text-center py-12 text-slate-500 text-xs">
+                    No articles read/summarized yet today. Use the Chrome extension to browse long-read articles!
+                </div>
+            }
+            else
+            {
+                @foreach (var article in TodaySummaries)
+                {
+                    <div class="p-5 rounded-2xl bg-slate-850/50 border border-slate-800/60 hover:border-slate-700/60 transition duration-150 space-y-2">
+                        <div class="flex items-start justify-between">
+                            <h4 class="font-bold text-slate-200 text-sm hover:text-brand-400 transition">
+                                <a href="@article.Url" target="_blank">@article.Title</a>
+                            </h4>
+                        </div>
+                        <p class="text-xs text-slate-400 italic">"@article.Summary"</p>
+                        <div class="text-[10px] text-slate-500 truncate">
+                            <a href="@article.Url" target="_blank" class="hover:underline">@article.Url</a>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool IsDigestGenerating = false;
+    private bool IsArticlesProcessing = false;
+    private string DigestContent = "";
+    private List<ArticleSummary> TodaySummaries = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSummariesAsync();
+    }
+
+    private async Task LoadSummariesAsync()
+    {
+        using var db = await DbFactory.CreateDbContextAsync();
+        var today = DateTime.Today;
+        TodaySummaries = await db.ArticleSummaries
+            .Where(s => s.Date >= today)
+            .OrderByDescending(s => s.Id)
+            .ToListAsync();
+        StateHasChanged();
+    }
+
+    private async Task GenerateDigestAsync()
+    {
+        IsDigestGenerating = true;
+        StateHasChanged();
+
+        try
+        {
+            DigestContent = await DigestService.GenerateDailyDigestAsync();
+        }
+        catch (Exception ex)
+        {
+            DigestContent = $"Error generating digest: {ex.Message}";
+        }
+        finally
+        {
+            IsDigestGenerating = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ProcessWebArticlesAsync()
+    {
+        IsArticlesProcessing = true;
+        StateHasChanged();
+
+        try
+        {
+            await SummarizerService.ProcessPendingUrlsAsync();
+            await LoadSummariesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error scanning web articles: {ex.Message}");
+        }
+        finally
+        {
+            IsArticlesProcessing = false;
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,142 @@
+@inherits LayoutComponentBase
+@inject IActivityTracker Tracker
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<div class="flex h-screen w-screen overflow-hidden bg-slate-950 text-slate-100">
+    <!-- Sidebar -->
+    <aside class="w-64 flex-shrink-0 bg-slate-900/50 border-r border-slate-800/80 backdrop-blur-xl flex flex-col justify-between p-6">
+        <div>
+            <!-- Logo Section -->
+            <div class="flex items-center space-x-3 mb-10">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-purple-500 flex items-center justify-center shadow-lg shadow-brand-500/25">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">DayScribe</h1>
+                    <span class="text-xs text-brand-400 font-medium">Local Activity Tracker</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="space-y-1.5">
+                <NavLink href="" Match="NavLinkMatch.All" ActiveClass="bg-brand-600/20 text-brand-300 border-brand-500/50" class="flex items-center space-x-3 px-4 py-3 rounded-xl border border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" /></svg>
+                    <span class="font-medium text-sm">Dashboard</span>
+                </NavLink>
+                <NavLink href="digest" ActiveClass="bg-brand-600/20 text-brand-300 border-brand-500/50" class="flex items-center space-x-3 px-4 py-3 rounded-xl border border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                    <span class="font-medium text-sm">Daily Digest</span>
+                </NavLink>
+                <NavLink href="log" ActiveClass="bg-brand-600/20 text-brand-300 border-brand-500/50" class="flex items-center space-x-3 px-4 py-3 rounded-xl border border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span class="font-medium text-sm">Activity Log</span>
+                </NavLink>
+            </nav>
+        </div>
+
+        <!-- Tracking Control and Privacy Notice -->
+        <div class="space-y-4">
+            <!-- Active Status Card -->
+            <div class="p-4 rounded-2xl bg-slate-850 border border-slate-800/80 backdrop-blur-md">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-slate-400 font-medium">Status</span>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="relative flex h-2 w-2">
+                            @if (Tracker.IsRunning)
+                            {
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            }
+                            else
+                            {
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                            }
+                        </span>
+                        <span class="text-xs font-semibold @(Tracker.IsRunning ? "text-emerald-400" : "text-rose-400")">
+                            @(Tracker.IsRunning ? "Tracking" : "Paused")
+                        </span>
+                    </div>
+                </div>
+
+                <button @onclick="ToggleTracking" class="w-full py-2 px-3 text-xs font-semibold rounded-xl transition duration-200 flex items-center justify-center space-x-1.5 border border-slate-700 hover:border-slate-600 hover:bg-slate-800/50">
+                    @if (Tracker.IsRunning)
+                    {
+                        <svg class="w-3.5 h-3.5 text-rose-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                        <span>Pause Logger</span>
+                    }
+                    else
+                    {
+                        <svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                        <span>Resume Logger</span>
+                    }
+                </button>
+            </div>
+
+            <!-- Privacy Indicator -->
+            <div class="flex items-center space-x-2 text-[10px] text-slate-500 justify-center">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.952 11.952 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                <span>100% Local. No Telemetry.</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col overflow-hidden bg-slate-900/10">
+        <!-- Top navigation/header -->
+        <header class="h-16 flex items-center justify-between px-8 border-b border-slate-800/40 bg-slate-900/20 backdrop-blur-md">
+            <div>
+                <h2 class="text-sm font-semibold text-slate-400">@GetPageTitle()</h2>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-xs text-slate-500 font-medium">Local Host API: <code class="bg-slate-800/80 px-2 py-1 rounded text-brand-300">9103</code></span>
+            </div>
+        </header>
+
+        <!-- Main Panel Body -->
+        <div class="flex-1 overflow-y-auto p-8">
+            @Body
+        </div>
+    </main>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Tracker.OnActivityLogged += HandleActivityLogged;
+    }
+
+    private void HandleActivityLogged(string app, string title)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void ToggleTracking()
+    {
+        if (Tracker.IsRunning)
+        {
+            Tracker.Stop();
+        }
+        else
+        {
+            Tracker.Start();
+        }
+        StateHasChanged();
+    }
+
+    private string GetPageTitle()
+    {
+        var relative = Navigation.ToBaseRelativePath(Navigation.Uri);
+        if (string.IsNullOrEmpty(relative)) return "Dashboard";
+        if (relative.StartsWith("digest")) return "Daily AI Digest";
+        if (relative.StartsWith("log")) return "Activity Logs Timeline";
+        return "DayScribe";
+    }
+
+    public void Dispose()
+    {
+        Tracker.OnActivityLogged -= HandleActivityLogged;
+    }
+}
