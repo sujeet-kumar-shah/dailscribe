@@ -1,0 +1,110 @@
+@page
+@{
+    ViewData["Title"] = "Download";
+    var version = "1.0.0";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold section-title">Download <span class="text-gradient">DayScribe</span></h1>
+        <p class="text-secondary fs-5">Available for Windows, macOS, and Linux. Version @version</p>
+    </div>
+
+    <div class="row g-4 justify-content-center mb-5">
+        <!-- Windows -->
+        <div class="col-lg-4 col-md-6">
+            <div class="download-card card h-100 p-4 text-center">
+                <div class="card-body">
+                    <div class="os-icon mb-3 text-primary">
+                        <i class="bi bi-windows2"></i>
+                    </div>
+                    <h4 class="fw-bold">Windows</h4>
+                    <p class="text-secondary small">Windows 10 / 11 (64-bit)</p>
+                    <a href="~/downloads/DayScribeSetup.exe" class="btn btn-primary rounded-pill px-4 py-2 w-100">
+                        <i class="bi bi-download me-2"></i>Download Installer
+                    </a>
+                    <p class="mt-2 mb-0 small text-secondary">.exe &middot; ~15 MB</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- macOS -->
+        <div class="col-lg-4 col-md-6">
+            <div class="download-card card h-100 p-4 text-center">
+                <div class="card-body">
+                    <div class="os-icon mb-3 text-secondary">
+                        <i class="bi bi-apple"></i>
+                    </div>
+                    <h4 class="fw-bold">macOS</h4>
+                    <p class="text-secondary small">macOS Ventura+ (Apple Silicon &amp; Intel)</p>
+                    <a href="~/downloads/DayScribe.dmg" class="btn btn-primary rounded-pill px-4 py-2 w-100">
+                        <i class="bi bi-download me-2"></i>Download DMG
+                    </a>
+                    <p class="mt-2 mb-0 small text-secondary">.dmg &middot; ~18 MB</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Linux -->
+        <div class="col-lg-4 col-md-6">
+            <div class="download-card card h-100 p-4 text-center">
+                <div class="card-body">
+                    <div class="os-icon mb-3 text-warning">
+                        <i class="bi bi-ubuntu"></i>
+                    </div>
+                    <h4 class="fw-bold">Linux</h4>
+                    <p class="text-secondary small">Ubuntu 22.04+ / Fedora 38+</p>
+                    <a href="~/downloads/DayScribe.AppImage" class="btn btn-primary rounded-pill px-4 py-2 w-100">
+                        <i class="bi bi-download me-2"></i>Download AppImage
+                    </a>
+                    <p class="mt-2 mb-0 small text-secondary">.AppImage &middot; ~20 MB</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Requirements -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 bg-light p-4">
+                <h4 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>System Requirements</h4>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <h6 class="fw-bold text-primary">Windows</h6>
+                        <ul class="small text-secondary mb-0 ps-3">
+                            <li>Windows 10 or 11 (64-bit)</li>
+                            <li>2 GB RAM</li>
+                            <li>150 MB disk space</li>
+                            <li>.NET 10 Runtime</li>
+                            <li>WebView2 Runtime</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="fw-bold text-secondary">macOS</h6>
+                        <ul class="small text-secondary mb-0 ps-3">
+                            <li>macOS Ventura or later</li>
+                            <li>2 GB RAM</li>
+                            <li>150 MB disk space</li>
+                            <li>Apple Silicon or Intel</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="fw-bold text-warning">Linux</h6>
+                        <ul class="small text-secondary mb-0 ps-3">
+                            <li>Ubuntu 22.04+ / Fedora 38+</li>
+                            <li>2 GB RAM</li>
+                            <li>150 MB disk space</li>
+                            <li>.NET 10 Runtime</li>
+                            <li>WebView2 (via Edge)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Changelog -->
+    <div class="text-center mt-4">
+        <a href="#" class="text-secondary small">View full changelog <i class="bi bi-box-arrow-up-right ms-1"></i></a>
+    </div>
+</div>

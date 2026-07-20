@@ -1,0 +1,116 @@
+@page
+@{
+    ViewData["Title"] = "Features";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold section-title">All <span class="text-gradient">Features</span></h1>
+        <p class="text-secondary fs-5">Every tool you need to track, reflect, and retain what you learn daily.</p>
+    </div>
+
+    <!-- Feature 1 -->
+    <div class="row align-items-center g-5 mb-5 pb-4">
+        <div class="col-lg-6">
+            <span class="badge bg-primary bg-opacity-10 text-primary mb-2">01</span>
+            <h2 class="fw-bold mb-3">Activity Tracking</h2>
+            <p class="text-secondary">DayScribe logs the active window title and application name every 2 seconds. It captures browser tabs via a lightweight Chrome extension — no invasive screen recording, just metadata.</p>
+            <ul class="list-unstyled">
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Foreground window tracking (2s interval)</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Chrome extension for URL &amp; tab tracking</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Time spent per app, domain, and article</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>SQLite storage — always accessible</li>
+            </ul>
+        </div>
+        <div class="col-lg-6 text-center">
+            <div class="bg-light rounded-4 p-5 shadow-sm">
+                <i class="bi bi-activity display-1 text-primary"></i>
+                <p class="text-secondary mt-3 small">Activity tracking dashboard mockup</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature 2 -->
+    <div class="row align-items-center g-5 mb-5 pb-4 flex-lg-row-reverse">
+        <div class="col-lg-6">
+            <span class="badge bg-info bg-opacity-10 text-info mb-2">02</span>
+            <h2 class="fw-bold mb-3">AI Daily Digest</h2>
+            <p class="text-secondary">Every evening, DayScribe analyzes your tracked activity and generates a natural-language summary of your day. It identifies top apps, domains, articles read, and key learning topics — all powered by local LLMs via Ollama or optionally OpenAI.</p>
+            <ul class="list-unstyled">
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Top apps and time breakdown</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Browsed domains &amp; article titles</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>AI-generated learning highlights</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Choose Ollama (local) or OpenAI</li>
+            </ul>
+        </div>
+        <div class="col-lg-6 text-center">
+            <div class="bg-light rounded-4 p-5 shadow-sm">
+                <i class="bi bi-journal-text display-1 text-info"></i>
+                <p class="text-secondary mt-3 small">Daily digest preview mockup</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature 3 -->
+    <div class="row align-items-center g-5 mb-5 pb-4">
+        <div class="col-lg-6">
+            <span class="badge bg-success bg-opacity-10 text-success mb-2">03</span>
+            <h2 class="fw-bold mb-3">Privacy-First Architecture</h2>
+            <p class="text-secondary">DayScribe is built for privacy from the ground up. All data is stored locally in SQLite. No telemetry, no accounts, no cloud synchronization unless you explicitly configure it. Your data never leaves your machine.</p>
+            <ul class="list-unstyled">
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>100% local SQLite storage</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>No accounts or sign-ups required</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Zero telemetry or analytics</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Open source (MIT license)</li>
+            </ul>
+        </div>
+        <div class="col-lg-6 text-center">
+            <div class="bg-light rounded-4 p-5 shadow-sm">
+                <i class="bi bi-shield-check display-1 text-success"></i>
+                <p class="text-secondary mt-3 small">Privacy diagram mockup</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature 4 -->
+    <div class="row align-items-center g-5 mb-5 pb-4 flex-lg-row-reverse">
+        <div class="col-lg-6">
+            <span class="badge bg-warning bg-opacity-10 text-warning mb-2">04</span>
+            <h2 class="fw-bold mb-3">Article Summarization</h2>
+            <p class="text-secondary">Read a long article during work? DayScribe's browser extension reports the URL. The built-in article summarizer fetches the content via SmartReader and generates a concise AI summary — so you can revisit key points without re-reading.</p>
+            <ul class="list-unstyled">
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>SmartReader content extraction</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>LLM-powered article summaries</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Stored locally for later review</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Works with any paywall-free article</li>
+            </ul>
+        </div>
+        <div class="col-lg-6 text-center">
+            <div class="bg-light rounded-4 p-5 shadow-sm">
+                <i class="bi bi-file-text display-1 text-warning"></i>
+                <p class="text-secondary mt-3 small">Article summarization mockup</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature 5 -->
+    <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+            <span class="badge bg-danger bg-opacity-10 text-danger mb-2">05</span>
+            <h2 class="fw-bold mb-3">Dashboard &amp; AI Chat</h2>
+            <p class="text-secondary">Visualize your day with charts showing time spent across apps and domains. The AI Chat lets you ask natural-language questions about your data: "What did I work on yesterday afternoon?" or "Summarize the articles I read this week."</p>
+            <ul class="list-unstyled">
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Interactive time breakdown charts</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Natural-language AI chat</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Raw activity log viewer</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Search and filter by date or app</li>
+            </ul>
+        </div>
+        <div class="col-lg-6 text-center">
+            <div class="bg-light rounded-4 p-5 shadow-sm">
+                <i class="bi bi-bar-chart display-1 text-danger"></i>
+                <p class="text-secondary mt-3 small">Dashboard &amp; chat mockup</p>
+            </div>
+        </div>
+    </div>
+</div>
