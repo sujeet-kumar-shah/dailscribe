@@ -1,8 +1,10 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +20,9 @@ namespace DayScribe;
 public class Program
 {
     private static WebApplication? _webApp;
+    private static readonly ManualResetEventSlim _kestrelReady = new(false);
     public static WebApplication? WebApp => _webApp;
+    public static int Port { get; private set; } = 9103;
 
     [STAThread]
     public static void Main(string[] args)
@@ -43,6 +47,7 @@ public class Program
         // Register AI and other business logic services
         builder.Services.AddSingleton<HttpClient>();
         builder.Services.AddSingleton<ArticleSummarizerService>();
+        builder.Services.AddHostedService(sp => sp.GetRequiredService<ArticleSummarizerService>());
         builder.Services.AddSingleton<DailyDigestService>();
 
         // CORS to allow browser extension requests
@@ -57,9 +62,8 @@ public class Program
         });
 
         // Get Port from configuration, default to 9103 -- set BEFORE Build()
-        var port = builder.Configuration.GetValue<int>("AppConfig:LocalApiPort", 9103);
-        // Configure Kestrel URL by setting it through the configuration system
-        builder.Configuration["urls"] = $"http://localhost:{port}";
+        Port = builder.Configuration.GetValue<int>("AppConfig:LocalApiPort", 9103);
+        builder.WebHost.UseUrls($"http://localhost:{Port}");
 
         _webApp = builder.Build();
 
@@ -84,10 +88,20 @@ public class Program
         _webApp.MapPost("/api/browser/activity", async (BrowserActivityDto dto, IDbContextFactory<DayScribeDbContext> dbFactory, ILogger<Program> logger) =>
         {
             logger.LogInformation("Received browser activity: {Url} for {Duration}s", dto.Url, dto.TimeSpentSecs);
-            
-            if (string.IsNullOrEmpty(dto.Url))
+
+            if (string.IsNullOrEmpty(dto.Url) || !Uri.TryCreate(dto.Url, UriKind.Absolute, out _))
             {
-                return Results.BadRequest("URL is required.");
+                return Results.BadRequest("A valid absolute URL is required.");
+            }
+
+            if (dto.TimeSpentSecs <= 0)
+            {
+                return Results.BadRequest("TimeSpentSecs must be greater than 0.");
+            }
+
+            if (dto.Title is { Length: > 2000 })
+            {
+                dto = dto with { Title = dto.Title[..2000] };
             }
 
             using var db = await dbFactory.CreateDbContextAsync();
@@ -107,8 +121,31 @@ public class Program
         _webApp.MapRazorComponents<Components.App>()
             .AddInteractiveServerRenderMode();
 
-        // Start Kestrel on background thread (URL already set via UseUrls above)
-        Task.Run(() => _webApp.RunAsync());
+        // Start Kestrel on background thread and signal when ready
+        Task.Run(async () =>
+        {
+            try
+            {
+                await _webApp.RunAsync();
+            }
+            catch (Exception ex)
+            {
+                var logger = _webApp.Services.GetRequiredService<ILogger<Program>>();
+                logger.LogCritical(ex, "Kestrel failed to start.");
+                Environment.Exit(1);
+            }
+            finally
+            {
+                _kestrelReady.Set();
+            }
+        });
+
+        // Wait for Kestrel to be ready before launching WPF
+        if (!_kestrelReady.Wait(TimeSpan.FromSeconds(10)))
+        {
+            var logger = _webApp.Services.GetRequiredService<ILogger<Program>>();
+            logger.LogWarning("Kestrel startup timeout - launching WPF anyway.");
+        }
 
         // Initialize and Run WPF App on main UI thread
         var wpfApp = new App();

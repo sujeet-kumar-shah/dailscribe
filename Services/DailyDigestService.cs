@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -206,16 +207,17 @@ Answer the question accurately, referencing the data. If the answer cannot be de
 
         try
         {
+            using var ollamaCts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             var response = await _httpClient.PostAsJsonAsync(ollamaEndpoint, new
             {
                 model = ollamaModel,
                 prompt = prompt,
                 stream = false
-            });
+            }, ollamaCts.Token);
 
             if (response.IsSuccessStatusCode)
             {
-                var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+                var json = await response.Content.ReadFromJsonAsync<JsonElement>(cancellationToken: ollamaCts.Token);
                 if (json.TryGetProperty("response", out var respProp))
                 {
                     return respProp.GetString()?.Trim() ?? "No output generated.";
@@ -235,6 +237,7 @@ Answer the question accurately, referencing the data. If the answer cannot be de
         }
 
         var openAiEndpoint = _configuration.GetValue<string>("AppConfig:OpenAI:Endpoint", "https://api.openai.com/v1/chat/completions");
+        using var openAiCts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
         using var request = new HttpRequestMessage(HttpMethod.Post, openAiEndpoint);
         request.Headers.Add("Authorization", $"Bearer {openAiKey}");
 
@@ -249,15 +252,15 @@ Answer the question accurately, referencing the data. If the answer cannot be de
         };
 
         request.Content = JsonContent.Create(requestBody);
-        var openAiResponse = await _httpClient.SendAsync(request);
+        var openAiResponse = await _httpClient.SendAsync(request, openAiCts.Token);
 
         if (!openAiResponse.IsSuccessStatusCode)
         {
-            var errText = await openAiResponse.Content.ReadAsStringAsync();
+            var errText = await openAiResponse.Content.ReadAsStringAsync(openAiCts.Token);
             throw new Exception($"OpenAI failed: {openAiResponse.StatusCode} - {errText}");
         }
 
-        var aiJson = await openAiResponse.Content.ReadFromJsonAsync<JsonElement>();
+        var aiJson = await openAiResponse.Content.ReadFromJsonAsync<JsonElement>(cancellationToken: openAiCts.Token);
         var content = aiJson
             .GetProperty("choices")[0]
             .GetProperty("message")

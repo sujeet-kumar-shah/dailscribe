@@ -2,6 +2,7 @@
 @inject DailyDigestService DigestService
 @inject ArticleSummarizerService SummarizerService
 @inject IDbContextFactory<DayScribeDbContext> DbFactory
+@inject IJSRuntime JsRuntime
 
 <div class="space-y-8 max-w-4xl mx-auto">
     <!-- Action panel -->
@@ -148,7 +149,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error scanning web articles: {ex.Message}");
+            await JsRuntime.InvokeVoidAsync("console.error", $"Error scanning web articles: {ex.Message}");
         }
         finally
         {

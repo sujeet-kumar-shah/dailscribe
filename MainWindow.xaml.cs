@@ -25,7 +25,7 @@ public partial class MainWindow : Window
         try
         {
             await MyWebView.EnsureCoreWebView2Async();
-            MyWebView.Source = new Uri("http://localhost:9103");
+            MyWebView.Source = new Uri($"http://localhost:{Program.Port}");
         }
         catch (Exception ex)
         {

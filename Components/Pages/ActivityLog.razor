@@ -1,5 +1,6 @@
 @page "/log"
 @inject IDbContextFactory<DayScribeDbContext> DbFactory
+@inject IJSRuntime JsRuntime
 
 <div class="space-y-6 max-w-5xl mx-auto">
     <!-- Filter Control Card -->
@@ -180,6 +181,9 @@
 
     private async Task ClearAllLogs()
     {
+        var confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "This will permanently delete ALL tracked activity, browser events, and article summaries. Are you sure?");
+        if (!confirmed) return;
+
         try
         {
             using var db = await DbFactory.CreateDbContextAsync();
@@ -190,7 +194,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error clearing database: {ex.Message}");
+            await JsRuntime.InvokeVoidAsync("console.error", $"Error clearing database: {ex.Message}");
         }
     }
 

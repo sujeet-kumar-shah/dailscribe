@@ -3,6 +3,9 @@ let accumulatedTime = 0;
 let lastUrl = window.location.href;
 let lastTitle = document.title;
 let trackingInterval = null;
+let titleObserver = null;
+
+const API_BASE = 'http://localhost:9103';
 
 function getActiveTime() {
   if (document.visibilityState === 'visible') {
@@ -22,15 +25,12 @@ function sendActivity() {
       timestamp: new Date().toISOString()
     };
 
-    // Reset accumulated time
     accumulatedTime = 0;
     startTime = Date.now();
 
-    fetch('http://localhost:9103/api/browser/activity', {
+    fetch(`${API_BASE}/api/browser/activity`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     })
     .then(response => {
@@ -63,35 +63,58 @@ function stopTracking() {
   sendActivity();
 }
 
-// Listen for tab focus/blur
+function updateUrlAndTitle() {
+  lastUrl = window.location.href;
+  lastTitle = document.title;
+}
+
+// ---- SPA Navigation Tracking ----
+// Intercept history.pushState and replaceState for SPA frameworks
+const originalPushState = history.pushState;
+const originalReplaceState = history.replaceState;
+
+history.pushState = function (...args) {
+  originalPushState.apply(this, args);
+  updateUrlAndTitle();
+};
+
+history.replaceState = function (...args) {
+  originalReplaceState.apply(this, args);
+  updateUrlAndTitle();
+};
+
+window.addEventListener('popstate', updateUrlAndTitle);
+window.addEventListener('hashchange', updateUrlAndTitle);
+
+// ---- Title Observer ----
+function setupTitleObserver() {
+  const titleEl = document.querySelector('title');
+  if (titleEl) {
+    titleObserver = new MutationObserver(() => {
+      if (document.title !== lastTitle) {
+        lastTitle = document.title;
+      }
+    });
+    titleObserver.observe(titleEl, { subtree: true, characterData: true, childList: true });
+  }
+}
+
+// ---- Tab visibility tracking ----
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
-    lastUrl = window.location.href;
-    lastTitle = document.title;
+    updateUrlAndTitle();
     startTracking();
   } else {
     stopTracking();
   }
 });
 
-// Send pending activity when page is unloaded/navigated away
 window.addEventListener('beforeunload', () => {
   sendActivity();
 });
 
-// Periodic Title updates (for Single Page Apps like YouTube/GitHub where pages change dynamically without page loads)
-const observer = new MutationObserver(() => {
-  if (document.title && document.title !== lastTitle) {
-    lastTitle = document.title;
-  }
-});
-observer.observe(document.querySelector('title') || document.documentElement, {
-  subtree: true,
-  characterData: true,
-  childList: true
-});
-
-// Start tracking immediately if the page loads and is already active
+// Initialize
+setupTitleObserver();
 if (document.visibilityState === 'visible') {
   startTracking();
 }

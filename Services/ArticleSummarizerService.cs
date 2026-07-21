@@ -3,9 +3,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using DayScribe.Database;
 using DayScribe.Database.Models;
@@ -13,7 +15,7 @@ using SmartReader;
 
 namespace DayScribe.Services;
 
-public class ArticleSummarizerService
+public class ArticleSummarizerService : BackgroundService
 {
     private readonly IDbContextFactory<DayScribeDbContext> _contextFactory;
     private readonly HttpClient _httpClient;
@@ -30,6 +32,31 @@ public class ArticleSummarizerService
         _httpClient = httpClient;
         _configuration = configuration;
         _logger = logger;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _logger.LogInformation("Article summarizer background service started.");
+
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try
+            {
+                await Task.Delay(TimeSpan.FromMinutes(15), stoppingToken);
+                if (!stoppingToken.IsCancellationRequested)
+                {
+                    await ProcessPendingUrlsAsync();
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Background article summarization encountered an error.");
+            }
+        }
     }
 
     public async Task ProcessPendingUrlsAsync()
@@ -157,23 +184,23 @@ public class ArticleSummarizerService
     {
         var prompt = $"Summarize the main learning point of this article in one clear, concise sentence:\n\n{articleText}";
 
-        // Attempt Ollama first
         var ollamaEndpoint = _configuration.GetValue<string>("AppConfig:Ollama:Endpoint", "http://localhost:11434/api/generate");
         var ollamaModel = _configuration.GetValue<string>("AppConfig:Ollama:Model", "llama3.2:1b");
 
         try
         {
             _logger.LogInformation("Calling local Ollama API ({Model})...", ollamaModel);
+            using var ollamaCts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             var response = await _httpClient.PostAsJsonAsync(ollamaEndpoint, new
             {
                 model = ollamaModel,
                 prompt = prompt,
                 stream = false
-            });
+            }, ollamaCts.Token);
 
             if (response.IsSuccessStatusCode)
             {
-                var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+                var json = await response.Content.ReadFromJsonAsync<JsonElement>(cancellationToken: ollamaCts.Token);
                 if (json.TryGetProperty("response", out var respProp))
                 {
                     return respProp.GetString()?.Trim() ?? "No summary generated.";
@@ -196,6 +223,7 @@ public class ArticleSummarizerService
         var openAiEndpoint = _configuration.GetValue<string>("AppConfig:OpenAI:Endpoint", "https://api.openai.com/v1/chat/completions");
         _logger.LogInformation("Calling OpenAI API as fallback...");
 
+        using var openAiCts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
         using var request = new HttpRequestMessage(HttpMethod.Post, openAiEndpoint);
         request.Headers.Add("Authorization", $"Bearer {openAiKey}");
 
@@ -210,15 +238,15 @@ public class ArticleSummarizerService
         };
 
         request.Content = JsonContent.Create(requestBody);
-        var openAiResponse = await _httpClient.SendAsync(request);
+        var openAiResponse = await _httpClient.SendAsync(request, openAiCts.Token);
 
         if (!openAiResponse.IsSuccessStatusCode)
         {
-            var errText = await openAiResponse.Content.ReadAsStringAsync();
+            var errText = await openAiResponse.Content.ReadAsStringAsync(openAiCts.Token);
             throw new Exception($"OpenAI API call failed: {openAiResponse.StatusCode} - {errText}");
         }
 
-        var aiJson = await openAiResponse.Content.ReadFromJsonAsync<JsonElement>();
+        var aiJson = await openAiResponse.Content.ReadFromJsonAsync<JsonElement>(cancellationToken: openAiCts.Token);
         var content = aiJson
             .GetProperty("choices")[0]
             .GetProperty("message")
