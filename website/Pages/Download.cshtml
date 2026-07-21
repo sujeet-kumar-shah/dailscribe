@@ -1,0 +1,167 @@
+@page
+@{
+    ViewData["Title"] = "Download";
+    var version = "1.0.0";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5 reveal">
+        <h1 class="display-5 fw-bold section-title">Download <span class="text-gradient">DayScribe</span></h1>
+        <p class="fs-5 mt-3" style="color: var(--gray-500);">Available for all major platforms. Version <strong>@version</strong></p>
+    </div>
+
+    <!-- Release info banner -->
+    <div class="text-center mb-5 reveal">
+        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 border border-primary border-opacity-25">
+            <i class="bi bi-stars me-1"></i>Latest Release v@(version)
+        </span>
+        <span class="ms-2 badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
+            <i class="bi bi-shield-check me-1"></i>Signed & Verified
+        </span>
+    </div>
+
+    <div class="row g-4 justify-content-center stagger-children">
+        <!-- Windows -->
+        <div class="col-lg-4 col-md-6">
+            <div class="download-card card h-100 p-4 text-center">
+                <div class="card-body d-flex flex-column">
+                    <div class="os-icon mb-3 text-primary">
+                        <i class="bi bi-windows2"></i>
+                    </div>
+                    <h4 class="fw-bold">Windows</h4>
+                    <p class="text-secondary small">Windows 10 / 11 (64-bit)</p>
+                    <a href="~/downloads/DayScribeSetup.exe" class="btn btn-primary rounded-pill px-4 py-2 w-100 mt-2">
+                        <i class="bi bi-download me-2"></i>Download Installer
+                    </a>
+                    <p class="mt-3 mb-0 small" style="color: var(--gray-400);">
+                        <i class="bi bi-file-binary me-1"></i>.exe &middot; ~15 MB
+                    </p>
+                    <p class="small mb-0" style="color: var(--gray-400);">
+                        <i class="bi bi-hash me-1"></i>SHA256: <code class="small" style="color: var(--gray-400);">a1b2c3d4...</code>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- macOS -->
+        <div class="col-lg-4 col-md-6">
+            <div class="download-card card h-100 p-4 text-center">
+                <div class="card-body d-flex flex-column">
+                    <div class="os-icon mb-3" style="color: var(--gray-600);">
+                        <i class="bi bi-apple"></i>
+                    </div>
+                    <h4 class="fw-bold">macOS</h4>
+                    <p class="text-secondary small">macOS Ventura+ (Apple Silicon &amp; Intel)</p>
+                    <a href="~/downloads/DayScribe.dmg" class="btn btn-primary rounded-pill px-4 py-2 w-100 mt-2">
+                        <i class="bi bi-download me-2"></i>Download DMG
+                    </a>
+                    <p class="mt-3 mb-0 small" style="color: var(--gray-400);">
+                        <i class="bi bi-file-binary me-1"></i>.dmg &middot; ~18 MB
+                    </p>
+                    <p class="small mb-0" style="color: var(--gray-400);">
+                        <i class="bi bi-hash me-1"></i>SHA256: <code class="small" style="color: var(--gray-400);">e5f6g7h8...</code>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Linux -->
+        <div class="col-lg-4 col-md-6">
+            <div class="download-card card h-100 p-4 text-center">
+                <div class="card-body d-flex flex-column">
+                    <div class="os-icon mb-3 text-warning">
+                        <i class="bi bi-ubuntu"></i>
+                    </div>
+                    <h4 class="fw-bold">Linux</h4>
+                    <p class="text-secondary small">Ubuntu 22.04+ / Fedora 38+</p>
+                    <a href="~/downloads/DayScribe.AppImage" class="btn btn-primary rounded-pill px-4 py-2 w-100 mt-2">
+                        <i class="bi bi-download me-2"></i>Download AppImage
+                    </a>
+                    <p class="mt-3 mb-0 small" style="color: var(--gray-400);">
+                        <i class="bi bi-file-binary me-1"></i>.AppImage &middot; ~20 MB
+                    </p>
+                    <p class="small mb-0" style="color: var(--gray-400);">
+                        <i class="bi bi-hash me-1"></i>SHA256: <code class="small" style="color: var(--gray-400);">i9j0k1l2...</code>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Requirements -->
+    <div class="row justify-content-center mt-5 reveal">
+        <div class="col-lg-10">
+            <div class="card border-0 bg-light p-5 rounded-4">
+                <h4 class="fw-bold mb-4">
+                    <i class="bi bi-info-circle me-2 text-primary"></i>System Requirements
+                </h4>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-windows2 fs-4 text-primary"></i>
+                            <h6 class="fw-bold mb-0">Windows</h6>
+                        </div>
+                        <ul class="small text-secondary mb-0 ps-0" style="list-style: none;">
+                            <li class="mb-2"><i class="bi bi-dot me-1"></i>Windows 10 or 11 (64-bit)</li>
+                            <li class="mb-2"><i class="bi bi-dot me-1"></i>2 GB RAM</li>
+                            <li class="mb-2"><i class="bi bi-dot me-1"></i>150 MB disk space</li>
+                            <li class="mb-2"><i class="bi bi-dot me-1"></i>.NET 10 Runtime</li>
+                            <li><i class="bi bi-dot me-1"></i>WebView2 Runtime</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-apple fs-4" style="color: var(--gray-600);"></i>
+                            <h6 class="fw-bold mb-0">macOS</h6>
+                        </div>
+                        <ul class="small text-secondary mb-0 ps-0" style="list-style: none;">
+                            <li class="mb-2"><i class="bi bi-dot me-1"></i>macOS Ventura or later</li>
+                            <li class="mb-2"><i class="bi bi-dot me-1"></i>2 GB RAM</li>
+                            <li class="mb-2"><i class="bi bi-dot me-1"></i>150 MB disk space</li>
+                            <li class="mb-2"><i class="bi bi-dot me-1"></i>.NET 10 Runtime</li>
+                            <li><i class="bi bi-dot me-1"></i>WebView2 Runtime</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-ubuntu fs-4 text-warning"></i>
+                            <h6 class="fw-bold mb-0">Linux</h6>
+                        </div>
+                        <ul class="small text-secondary mb-0 ps-0" style="list-style: none;">
+                            <li class="mb-2"><i class="bi bi-dot me-1"></i>Ubuntu 22.04+ / Fedora 38+</li>
+                            <li class="mb-2"><i class="bi bi-dot me-1"></i>2 GB RAM</li>
+                            <li class="mb-2"><i class="bi bi-dot me-1"></i>150 MB disk space</li>
+                            <li class="mb-2"><i class="bi bi-dot me-1"></i>.NET 10 Runtime</li>
+                            <li><i class="bi bi-dot me-1"></i>WebView2 Runtime</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Install instructions -->
+    <div class="row justify-content-center mt-4 reveal">
+        <div class="col-lg-10">
+            <div class="card border-0 p-5 rounded-4" style="background: var(--dark);">
+                <h4 class="fw-bold mb-4 text-light">
+                    <i class="bi bi-terminal me-2 text-primary"></i>Quick Install via CLI
+                </h4>
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="flex-grow-1">
+                        <pre class="mb-0" style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; color: #e2e8f0; font-size: 0.9rem;">winget install DayScribe.DayScribe</pre>
+                        <p class="small mt-2 mb-0" style="color: var(--gray-400);"><i class="bi bi-windows me-1"></i>Windows (winget)</p>
+                    </div>
+                    <div class="flex-grow-1">
+                        <pre class="mb-0" style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; color: #e2e8f0; font-size: 0.9rem;">brew install dayscribe</pre>
+                        <p class="small mt-2 mb-0" style="color: var(--gray-400);"><i class="bi bi-apple me-1"></i>macOS (Homebrew)</p>
+                    </div>
+                    <div class="flex-grow-1">
+                        <pre class="mb-0" style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; color: #e2e8f0; font-size: 0.9rem;">snap install dayscribe</pre>
+                        <p class="small mt-2 mb-0" style="color: var(--gray-400);"><i class="bi bi-ubuntu me-1"></i>Linux (Snap)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

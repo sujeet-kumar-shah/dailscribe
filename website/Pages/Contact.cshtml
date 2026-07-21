@@ -1,0 +1,108 @@
+@page
+@model ContactModel
+@{
+    ViewData["Title"] = "Contact";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5 reveal">
+        <h1 class="display-5 fw-bold section-title">Get in <span class="text-gradient">Touch</span></h1>
+        <p class="fs-5 mt-3" style="color: var(--gray-500);">Have a question, feedback, or need help? We'd love to hear from you.</p>
+    </div>
+
+    <div class="row g-5 justify-content-center">
+        <div class="col-lg-5 reveal-left">
+            <!-- Contact info cards -->
+            <div class="mb-4">
+                <div class="d-flex align-items-start gap-3 p-4 rounded-4" style="background: var(--gray-100);">
+                    <div class="feature-icon bg-primary bg-opacity-10 text-primary flex-shrink-0">
+                        <i class="bi bi-envelope"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Email Us</h6>
+                        <p class="text-secondary small mb-0">hello@@dayscribe.app</p>
+                        <p class="text-secondary small">We typically reply within 24 hours.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-4">
+                <div class="d-flex align-items-start gap-3 p-4 rounded-4" style="background: var(--gray-100);">
+                    <div class="feature-icon bg-success bg-opacity-10 text-success flex-shrink-0">
+                        <i class="bi bi-chat-dots"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Join the Community</h6>
+                        <p class="text-secondary small mb-0">Discuss features, share tips, and get help from other DayScribe users.</p>
+                        <div class="d-flex gap-2 mt-2">
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill"><i class="bi bi-discord me-1"></i>Discord</a>
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill"><i class="bi bi-github me-1"></i>GitHub</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="d-flex align-items-start gap-3 p-4 rounded-4" style="background: var(--gray-100);">
+                    <div class="feature-icon bg-warning bg-opacity-10 text-warning flex-shrink-0">
+                        <i class="bi bi-bug"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Report a Bug</h6>
+                        <p class="text-secondary small mb-0">Found an issue? Open a GitHub issue and we'll take a look.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary rounded-pill mt-2"><i class="bi bi-github me-1"></i>Open Issue</a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 p-4 rounded-4" style="background: var(--dark);">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i class="bi bi-shield-check text-success"></i>
+                    <span class="text-light small fw-bold">Your privacy matters</span>
+                </div>
+                <p class="small mb-0" style="color: var(--gray-400);">We don't track you. This form data is sent directly via email and never stored or shared with third parties.</p>
+            </div>
+        </div>
+
+        <div class="col-lg-5 reveal-right">
+            @if (Model.SuccessMessage != null)
+            {
+                <div class="alert alert-success rounded-4 border-0 d-flex align-items-center gap-2 shadow-sm" role="alert">
+                    <i class="bi bi-check-circle-fill fs-5"></i>
+                    <div>
+                        <strong>Message sent!</strong><br />
+                        <span class="small">@Model.SuccessMessage</span>
+                    </div>
+                </div>
+            }
+
+            <form method="post" class="bg-light p-4 rounded-4 shadow-sm">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Contact.Name" class="form-label fw-medium small">Name</label>
+                    <input asp-for="Contact.Name" class="form-control form-control-lg" placeholder="Your name" />
+                    <span asp-validation-for="Contact.Name" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Contact.Email" class="form-label fw-medium small">Email</label>
+                    <input asp-for="Contact.Email" class="form-control form-control-lg" placeholder="you@@example.com" />
+                    <span asp-validation-for="Contact.Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Contact.Message" class="form-label fw-medium small">Message</label>
+                    <textarea asp-for="Contact.Message" class="form-control form-control-lg" rows="5" placeholder="How can we help?" id="Contact_Message" maxlength="5000"></textarea>
+                    <span asp-validation-for="Contact.Message" class="text-danger small"></span>
+                    <small id="charCount" class="text-secondary float-end mt-1"></small>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg rounded-pill w-100 py-3 fw-semibold shadow-sm">
+                    <i class="bi bi-send me-2"></i>Send Message
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

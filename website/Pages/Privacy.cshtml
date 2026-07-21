@@ -1,0 +1,34 @@
+﻿@page
+@{
+    ViewData["Title"] = "Privacy Policy";
+}
+
+<div class="container py-5">
+    <h1 class="display-5 fw-bold section-title mb-4">Privacy <span class="text-gradient">Policy</span></h1>
+    <p class="text-secondary"><em>Last updated: July 20, 2026</em></p>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <h4 class="fw-bold mt-4">1. Data Collection</h4>
+            <p>DayScribe collects activity metadata (active window titles, application names, browser URLs, and time spent) solely for the purpose of generating daily summaries. All data is stored locally on your machine in a SQLite database.</p>
+
+            <h4 class="fw-bold mt-4">2. No Cloud Storage</h4>
+            <p>Your data never leaves your computer unless you explicitly configure an AI provider. By default, all processing — including AI summarization — happens locally via Ollama. If you choose OpenAI, only the digest prompt is sent to their API; raw activity logs are never transmitted.</p>
+
+            <h4 class="fw-bold mt-4">3. Telemetry &amp; Analytics</h4>
+            <p>DayScribe does not include any telemetry, analytics, or crash reporting. We have no servers that collect data from your usage.</p>
+
+            <h4 class="fw-bold mt-4">4. Browser Extension</h4>
+            <p>The Chrome extension reports active tab URLs and titles to the local DayScribe API (http://localhost:9103). No data is sent to external servers. You can review the extension source code in the Extension/ folder.</p>
+
+            <h4 class="fw-bold mt-4">5. Third-Party Services</h4>
+            <p>If you enable OpenAI integration, digest content is sent to OpenAI's API. Please review OpenAI's privacy policy for how they handle data. No other third-party services are used.</p>
+
+            <h4 class="fw-bold mt-4">6. Your Rights</h4>
+            <p>Since all data is stored locally, you have full control. You can delete, export, or inspect your data at any time through the application or by directly accessing the SQLite database file.</p>
+
+            <h4 class="fw-bold mt-4">7. Contact</h4>
+            <p>If you have questions about this policy, please <a asp-page="/Contact">contact us</a>.</p>
+        </div>
+    </div>
+</div>
